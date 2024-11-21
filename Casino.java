@@ -7,4 +7,11 @@ public class Casino {
      *  - keep track of Player's wins/losses
      *  - manage games
      */
+
+    Player p;
+
+    Casino(int pid) {
+        // initialize a new Player
+        p = new Player(pid, 0);
+    }
 }
