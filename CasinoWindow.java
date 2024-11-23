@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
+import Games.*;
 
 public class CasinoWindow implements ActionListener {
     /*
@@ -91,6 +92,7 @@ public class CasinoWindow implements ActionListener {
         playDiceButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("HomeScreen: Dice button pressed");
+                new Dice();
             }
         });
         homeScreen.add(playDiceButton);
