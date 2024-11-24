@@ -1,3 +1,4 @@
+package Shared;
 public class Player {
     private int playerID;
     private int chips;
