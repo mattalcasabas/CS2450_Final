@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
+import Games.*;
 
 public class CasinoWindow implements ActionListener {
     /*
@@ -35,7 +36,8 @@ public class CasinoWindow implements ActionListener {
 
         makeMenuBar();
         makeHomeScreen();
-        makeWelcomeScreen();
+        // need to open just welcome screen first and then makeHomeScreen() is called when the player is selected so 2 windows don't open
+        // makeWelcomeScreen();
 
     }
 
@@ -80,6 +82,7 @@ public class CasinoWindow implements ActionListener {
             }
         });
         homeScreen.add(playBlackjackButton);
+
         JButton playRouletteButton = new JButton("Play Roulette...");
         playRouletteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -87,13 +90,17 @@ public class CasinoWindow implements ActionListener {
             }
         });
         homeScreen.add(playRouletteButton);
+
         JButton playDiceButton = new JButton("Play Dice...");
         playDiceButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("HomeScreen: Dice button pressed");
+                // need to make it so the game opens in the same window instead of a new jframe (maybe use cardlayout?)
+                new Dice();
             }
         });
         homeScreen.add(playDiceButton);
+
         JButton playSlotsButton = new JButton("Play Slots...");
         playSlotsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

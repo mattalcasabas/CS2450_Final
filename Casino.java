@@ -1,3 +1,5 @@
+import Shared.Player;
+
 public class Casino {
     /*
      * this creates a new Casino
