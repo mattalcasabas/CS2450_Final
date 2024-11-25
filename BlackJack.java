@@ -21,9 +21,15 @@ public class BlackJack {
 		
 		//create JButtons for the following actions:
 		//hit, stand, surrender
+		JButton hitBut = new JButton("Hit");
+		JButton standBut = new JButton("Stand");
+		JButton surrenderBut = new JButton("Surrender");
 		
 		//JPanel to hold game contents
 		JPanel blackjackPanel = new JPanel();
+		blackjackPanel.add(hitBut);
+		blackjackPanel.add(standBut);
+		blackjackPanel.add(surrenderBut);
 		//add contents to blackjackPanel
 		
 		//add blackjackPanel to JFrame
