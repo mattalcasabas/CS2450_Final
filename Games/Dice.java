@@ -8,10 +8,11 @@ import java.util.Random;
 
 public class Dice implements ActionListener{
     JFrame diceScreen;
-    JButton Bet, Roll, Back;
+    JButton Bet, Roll, Exit;
     int bettedCoins, currCoins;
     private ImageIcon[] diceFaces;
     JLabel coinsCount, dice1, dice2;
+    Random rand = new Random();
     
     public Dice(){
         diceScreen = new JFrame("Dice Game");
@@ -28,7 +29,6 @@ public class Dice implements ActionListener{
             diceFaces[i] = new ImageIcon(scaled);
             System.out.println("added " + i);
         }
-        //random = new Random()
 
         // hardcoded set number of coins
         currCoins = 5;
@@ -37,10 +37,10 @@ public class Dice implements ActionListener{
         // action buttons and their listeners
         Bet = new JButton("BET");
         Roll = new JButton("ROLL");
-        Back = new JButton("GO BACK");
+        Exit = new JButton("EXIT GAME");
         Bet.addActionListener(this);
         Roll.addActionListener(this);
-        Back.addActionListener(this);
+        Exit.addActionListener(this);
 
         // page layout (add all components on the screen)
         // top panel for the coin count label
@@ -49,8 +49,8 @@ public class Dice implements ActionListener{
 
         // center panel for dice images (default dice image is dice1)
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
-        JLabel dice1 = new JLabel(diceFaces[0]);
-        JLabel dice2 = new JLabel(diceFaces[0]); 
+        dice1 = new JLabel(diceFaces[0]);
+        dice2 = new JLabel(diceFaces[0]); 
         centerPanel.add(dice1);
         centerPanel.add(dice2);
 
@@ -58,7 +58,7 @@ public class Dice implements ActionListener{
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         bottomPanel.add(Bet);
         bottomPanel.add(Roll);
-        bottomPanel.add(Back);
+        bottomPanel.add(Exit);
 
         diceScreen.add(topPanel);
         diceScreen.add(centerPanel);
@@ -73,19 +73,27 @@ public class Dice implements ActionListener{
        }
        if(ae.getSource() == Roll){
         System.out.println("Roll button pressed");
-        // rolls the dice (need to use game logic for this)
+        rollDice();
        }
-       if(ae.getSource() == Back){
-        System.out.println("Back button pressed");
-        // redirect to the original home page
+       if(ae.getSource() == Exit){
+        System.out.println("Exit button pressed");
+        diceScreen.dispose();
        }
 	}
+
+    // method to simulate a dice roll on the UI
+    private void rollDice(){
+        int r1 = rand.nextInt(5);
+        int r2 = rand.nextInt(5);
+        dice1.setIcon(diceFaces[r1]);
+        dice2.setIcon(diceFaces[r2]);
+    }
 
     // method to show betting dialog box
     private void openBetting(JFrame parent) {
         JDialog betDialog = new JDialog();
         betDialog.setTitle("");
-        betDialog.setSize(300, 150);
+        betDialog.setSize(300, 100);
         betDialog.setLocationRelativeTo(parent);
 
         betDialog.setModal(true);
@@ -105,8 +113,8 @@ public class Dice implements ActionListener{
             public void actionPerformed(ActionEvent ae){
                 if(ae.getSource() == bet){
                     bettedCoins = (int) jspn.getValue();
-                    System.out.println("betted coins = " + bettedCoins);
-                    betDialog.dispose();
+                        System.out.println("betted coins = " + bettedCoins);
+                        betDialog.dispose();
                 }
             }
         });
