@@ -83,10 +83,16 @@ public class Dice implements ActionListener{
 
     // method to simulate a dice roll on the UI
     private void rollDice(){
-        int r1 = rand.nextInt(5);
-        int r2 = rand.nextInt(5);
-        dice1.setIcon(diceFaces[r1]);
-        dice2.setIcon(diceFaces[r2]);
+        if(bettedCoins == 0){
+            JOptionPane.showMessageDialog(diceScreen, "Please make a bet!", "Roll Dice", JOptionPane.ERROR_MESSAGE);
+        }
+        else{
+            int r1 = rand.nextInt(5);
+            int r2 = rand.nextInt(5);
+            dice1.setIcon(diceFaces[r1]);
+            dice2.setIcon(diceFaces[r2]);
+            bettedCoins = 0;
+        }
     }
 
     // method to show betting dialog box
