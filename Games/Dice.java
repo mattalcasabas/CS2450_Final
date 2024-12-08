@@ -11,7 +11,7 @@ public class Dice implements ActionListener{
     JButton Bet, Roll, Exit;
     int bettedCoins, currCoins, dealerRoll, userRoll;
     private ImageIcon[] diceFaces;
-    JLabel coinsCount, dice1, dice2, dealer;
+    JLabel coinsCount, dice1, dice2, display, dealer1, dealer2;
     Random rand = new Random();
     
     public Dice(){
@@ -34,7 +34,7 @@ public class Dice implements ActionListener{
         coinsCount = new JLabel("Coins " + currCoins, SwingConstants.RIGHT);
 
         // dealer will represent the number roll to beat
-        dealer = new JLabel("Make a bet and roll a higher number than the Dealer to win!");
+        display = new JLabel("Make a bet and roll a higher number than the Dealer to win!");
         dealerRoll = rand.nextInt(11) + 1;
 
         // action buttons and their listeners
@@ -49,7 +49,7 @@ public class Dice implements ActionListener{
         // top panel for the coin count label
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(coinsCount, BorderLayout.LINE_START);
-        topPanel.add(dealer, BorderLayout.SOUTH);
+        topPanel.add(display, BorderLayout.SOUTH);
 
         // center panel for dice images (default dice image is dice1)
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
@@ -74,14 +74,15 @@ public class Dice implements ActionListener{
        if(ae.getSource() == Bet){
         System.out.println("Bet button pressed");
         openBetting(diceScreen);
-        dealer.setText("You betted " + bettedCoins + " coins. The Dealer has rolled " + dealerRoll + ". Your turn.");
+        display.setText("You betted " + bettedCoins + " coins. The Dealer has rolled " + dealerRoll + ". Your turn.");
        }
        if(ae.getSource() == Roll){
         System.out.println("Roll button pressed");
         if(bettedCoins == 0){
             JOptionPane.showMessageDialog(diceScreen, "Please make a bet!", "Roll Dice", JOptionPane.ERROR_MESSAGE);
         }else{
-            rollDice();
+            rollDice(dice1, dice2, userRoll);
+            score();
         }
        }
        if(ae.getSource() == Exit){
@@ -90,29 +91,55 @@ public class Dice implements ActionListener{
        }
 	}
 
-    // method to simulate a dice roll on the UI
-    private void rollDice(){
+    private void rollDice(JLabel dice1, JLabel dice2, int roll){
         int r1 = rand.nextInt(5);
         int r2 = rand.nextInt(5);
         dice1.setIcon(diceFaces[r1]);
         dice2.setIcon(diceFaces[r2]);
-        userRoll = r1 + r2 + 2; //we add 2 because the random index is from 0-5 instead of 1-6
+        roll = r1 + r2 + 2;
+    }
+
+    private void score(){
         if(userRoll == dealerRoll){
-            dealer.setText("Tie! You lost/gained no coins.");
+            display.setText("Tie! You lost/gained no coins.");
              return;
         }
         else if(userRoll > dealerRoll){
-            dealer.setText("You won! You gained " + bettedCoins + " coins!");
+            display.setText("You won! You gained " + bettedCoins + " coins!");
             currCoins += bettedCoins;
             coinsCount.setText("Coins " + currCoins);
         }
         else{
-            dealer.setText("You lost. You lose " + bettedCoins + " coins :(");
+            display.setText("You lost. You lose " + bettedCoins + " coins :(");
             currCoins -= bettedCoins;
             coinsCount.setText("Coins " + currCoins);
         }
         bettedCoins = 0;
     }
+
+    // // method to simulate a dice roll on the UI
+    // private void rollDice(){
+    //     int r1 = rand.nextInt(5);
+    //     int r2 = rand.nextInt(5);
+    //     dice1.setIcon(diceFaces[r1]);
+    //     dice2.setIcon(diceFaces[r2]);
+    //     userRoll = r1 + r2 + 2; //we add 2 because the random index is from 0-5 instead of 1-6
+    //     if(userRoll == dealerRoll){
+    //         display.setText("Tie! You lost/gained no coins.");
+    //          return;
+    //     }
+    //     else if(userRoll > dealerRoll){
+    //         display.setText("You won! You gained " + bettedCoins + " coins!");
+    //         currCoins += bettedCoins;
+    //         coinsCount.setText("Coins " + currCoins);
+    //     }
+    //     else{
+    //         display.setText("You lost. You lose " + bettedCoins + " coins :(");
+    //         currCoins -= bettedCoins;
+    //         coinsCount.setText("Coins " + currCoins);
+    //     }
+    //     bettedCoins = 0;
+    // }
 
     // method to show betting dialog box
     private void openBetting(JFrame parent) {
@@ -129,7 +156,7 @@ public class Dice implements ActionListener{
         JLabel request = new JLabel("How many coins?");
         betPanel.add(request);
 
-        SpinnerNumberModel spinModel = new SpinnerNumberModel(0, 0, currCoins, 1);
+        SpinnerNumberModel spinModel = new SpinnerNumberModel(1, 1, currCoins, 1);
         JSpinner jspn = new JSpinner(spinModel);
         betPanel.add(jspn);
 
