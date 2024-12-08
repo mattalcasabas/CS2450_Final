@@ -2,13 +2,15 @@ package Games;
 
 import Shared.Player; // need to add game logic to support new player
 import javax.swing.*;
+import javax.swing.border.Border;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
 
 public class Dice implements ActionListener{
     JFrame diceScreen;
-    JButton Bet, Roll, Exit;
+    JButton Bet, Roll, Exit, Start;
     int bettedCoins, currCoins, dealerRoll, userRoll;
     private ImageIcon[] diceFaces;
     JLabel coinsCount, dice1, dice2, display, dealer1, dealer2;
@@ -18,7 +20,11 @@ public class Dice implements ActionListener{
         diceScreen = new JFrame("Dice Game");
         diceScreen.setSize(500,500);
         diceScreen.setVisible(true);
-        diceScreen.setLayout(new GridLayout(3,1));
+        diceScreen.setLayout(new BorderLayout());
+
+        // hardcoded set number of coins
+        currCoins = 5;
+        coinsCount = new JLabel("Coins " + currCoins, SwingConstants.RIGHT);
 
         // load all dice images in an array to be randomized during gameplay
         diceFaces = new ImageIcon[6];
@@ -28,19 +34,17 @@ public class Dice implements ActionListener{
             diceFaces[i] = new ImageIcon(scaled);
             System.out.println("added " + i);
         }
-
-        // hardcoded set number of coins
-        currCoins = 5;
-        coinsCount = new JLabel("Coins " + currCoins, SwingConstants.RIGHT);
-
-        // dealer will represent the number roll to beat
-        display = new JLabel("Make a bet and roll a higher number than the Dealer to win!");
-        dealerRoll = rand.nextInt(11) + 1;
-
+    
         // action buttons and their listeners
+        Start = new JButton("START GAME");
+        Start.setVisible(true);
         Bet = new JButton("BET");
+        Bet.setVisible(false);
         Roll = new JButton("ROLL");
+        Roll.setVisible(false);
         Exit = new JButton("EXIT GAME");
+        Exit.setVisible(false);
+        Start.addActionListener(this);
         Bet.addActionListener(this);
         Roll.addActionListener(this);
         Exit.addActionListener(this);
@@ -49,14 +53,31 @@ public class Dice implements ActionListener{
         // top panel for the coin count label
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(coinsCount, BorderLayout.LINE_START);
-        topPanel.add(display, BorderLayout.SOUTH);
 
         // center panel for dice images (default dice image is dice1)
-        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+
+        dealer1 = new JLabel(diceFaces[0]);
+        dealer2 = new JLabel(diceFaces[0]);
+        JPanel dealers = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        dealers.add(dealer1);
+        dealers.add(dealer2);
+
+        display = new JLabel("Make a bet and roll a higher number than the Dealer to win!");
+        JPanel displayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        displayPanel.add(display);
+        displayPanel.add(Start);
+
         dice1 = new JLabel(diceFaces[0]);
         dice2 = new JLabel(diceFaces[0]); 
-        centerPanel.add(dice1);
-        centerPanel.add(dice2);
+        JPanel dice = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        dice.add(dice1);
+        dice.add(dice2);
+
+        centerPanel.add(dealers);
+        centerPanel.add(displayPanel);
+        centerPanel.add(dice);
 
         // bottom panel for buttons
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -64,82 +85,67 @@ public class Dice implements ActionListener{
         bottomPanel.add(Roll);
         bottomPanel.add(Exit);
 
-        diceScreen.add(topPanel);
-        diceScreen.add(centerPanel);
-        diceScreen.add(bottomPanel);
+        diceScreen.add(topPanel, BorderLayout.NORTH);
+        diceScreen.add(centerPanel, BorderLayout.CENTER);
+        diceScreen.add(bottomPanel, BorderLayout.SOUTH);
     }
 
     //actions for the buttons to work when pressed
 	public void actionPerformed (ActionEvent ae){
-       if(ae.getSource() == Bet){
-        System.out.println("Bet button pressed");
-        openBetting(diceScreen);
-        display.setText("You betted " + bettedCoins + " coins. The Dealer has rolled " + dealerRoll + ". Your turn.");
-       }
-       if(ae.getSource() == Roll){
-        System.out.println("Roll button pressed");
-        if(bettedCoins == 0){
-            JOptionPane.showMessageDialog(diceScreen, "Please make a bet!", "Roll Dice", JOptionPane.ERROR_MESSAGE);
-        }else{
-            rollDice(dice1, dice2, userRoll);
-            score();
+        if(ae.getSource() == Start){
+            Start.setVisible(false);
+            Bet.setVisible(true);
+            Roll.setVisible(true);
+            Exit.setVisible(true);
+            dealerRoll = rollDice(dealer1, dealer2);
+            display.setText("The dealer rolled " + dealerRoll + ". Please make a bet.");
         }
-       }
-       if(ae.getSource() == Exit){
-        System.out.println("Exit button pressed");
-        diceScreen.dispose();
-       }
+        if(ae.getSource() == Bet){
+            System.out.println("Bet button pressed");
+            openBetting(diceScreen);
+            display.setText("You betted " + bettedCoins + " coins. Make a roll.");
+        }
+        if(ae.getSource() == Roll){
+            System.out.println("Roll button pressed");
+            if(bettedCoins == 0){
+                JOptionPane.showMessageDialog(diceScreen, "Please make a bet!", "Roll Dice", JOptionPane.ERROR_MESSAGE);
+            }else{
+                userRoll = rollDice(dice1, dice2);
+                score();
+            }
+        }
+        if(ae.getSource() == Exit){
+            System.out.println("Exit button pressed");
+            diceScreen.dispose();
+        }
 	}
 
-    private void rollDice(JLabel dice1, JLabel dice2, int roll){
+    private int rollDice(JLabel dice1, JLabel dice2){
         int r1 = rand.nextInt(5);
         int r2 = rand.nextInt(5);
         dice1.setIcon(diceFaces[r1]);
         dice2.setIcon(diceFaces[r2]);
-        roll = r1 + r2 + 2;
+        return r1+r2+2; // roll total will be saved
     }
 
+    // calculates the score and adds coins
     private void score(){
         if(userRoll == dealerRoll){
             display.setText("Tie! You lost/gained no coins.");
              return;
         }
         else if(userRoll > dealerRoll){
-            display.setText("You won! You gained " + bettedCoins + " coins!");
+            display.setText("You rolled " + userRoll + " and won! You gained " + bettedCoins + " coins!");
             currCoins += bettedCoins;
             coinsCount.setText("Coins " + currCoins);
         }
         else{
-            display.setText("You lost. You lose " + bettedCoins + " coins :(");
+            display.setText("You rolled " + userRoll + " and lost. You lose " + bettedCoins + " coins :(");
             currCoins -= bettedCoins;
             coinsCount.setText("Coins " + currCoins);
         }
         bettedCoins = 0;
     }
-
-    // // method to simulate a dice roll on the UI
-    // private void rollDice(){
-    //     int r1 = rand.nextInt(5);
-    //     int r2 = rand.nextInt(5);
-    //     dice1.setIcon(diceFaces[r1]);
-    //     dice2.setIcon(diceFaces[r2]);
-    //     userRoll = r1 + r2 + 2; //we add 2 because the random index is from 0-5 instead of 1-6
-    //     if(userRoll == dealerRoll){
-    //         display.setText("Tie! You lost/gained no coins.");
-    //          return;
-    //     }
-    //     else if(userRoll > dealerRoll){
-    //         display.setText("You won! You gained " + bettedCoins + " coins!");
-    //         currCoins += bettedCoins;
-    //         coinsCount.setText("Coins " + currCoins);
-    //     }
-    //     else{
-    //         display.setText("You lost. You lose " + bettedCoins + " coins :(");
-    //         currCoins -= bettedCoins;
-    //         coinsCount.setText("Coins " + currCoins);
-    //     }
-    //     bettedCoins = 0;
-    // }
 
     // method to show betting dialog box
     private void openBetting(JFrame parent) {
