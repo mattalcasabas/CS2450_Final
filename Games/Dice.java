@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class Dice implements ActionListener{
     JFrame diceScreen;
-    JButton Bet, Roll, Exit, Start;
+    JButton Bet, Roll, Exit, Start, Replay;
     int bettedCoins, currCoins, dealerRoll, userRoll;
     private ImageIcon[] diceFaces;
     JLabel coinsCount, dice1, dice2, display, dealer1, dealer2;
@@ -93,22 +93,17 @@ public class Dice implements ActionListener{
     //actions for the buttons to work when pressed
 	public void actionPerformed (ActionEvent ae){
         if(ae.getSource() == Start){
-            Start.setVisible(false);
-            Bet.setVisible(true);
-            Roll.setVisible(true);
-            Exit.setVisible(true);
-            dealerRoll = rollDice(dealer1, dealer2);
-            display.setText("The dealer rolled " + dealerRoll + ". Please make a bet.");
+            play();
         }
         if(ae.getSource() == Bet){
             System.out.println("Bet button pressed");
             openBetting(diceScreen);
-            display.setText("You betted " + bettedCoins + " coins. Make a roll.");
+            display.setText("You bet " + bettedCoins + " coin(s). Roll the dice.");
         }
         if(ae.getSource() == Roll){
             System.out.println("Roll button pressed");
             if(bettedCoins == 0){
-                JOptionPane.showMessageDialog(diceScreen, "Please make a bet!", "Roll Dice", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(diceScreen, "Please make a bet!", null, JOptionPane.ERROR_MESSAGE);
             }else{
                 userRoll = rollDice(dice1, dice2);
                 score();
@@ -132,19 +127,20 @@ public class Dice implements ActionListener{
     private void score(){
         if(userRoll == dealerRoll){
             display.setText("Tie! You lost/gained no coins.");
-             return;
         }
         else if(userRoll > dealerRoll){
-            display.setText("You rolled " + userRoll + " and won! You gained " + bettedCoins + " coins!");
+            display.setText("You rolled " + userRoll + " and won! You gained " + bettedCoins + " coin(s)!");
             currCoins += bettedCoins;
             coinsCount.setText("Coins " + currCoins);
         }
         else{
-            display.setText("You rolled " + userRoll + " and lost. You lose " + bettedCoins + " coins :(");
+            display.setText("You rolled " + userRoll + " and lost. You lose " + bettedCoins + " coin(s) :(");
             currCoins -= bettedCoins;
             coinsCount.setText("Coins " + currCoins);
         }
         bettedCoins = 0;
+        Start.setText("Play Again?");
+        Start.setVisible(true);
     }
 
     // method to show betting dialog box
@@ -179,6 +175,21 @@ public class Dice implements ActionListener{
         betPanel.add(bet);
         betDialog.add(betPanel);
         betDialog.setVisible(true);
+    }
+
+    private void play(){
+        if(currCoins <= 0){
+            JOptionPane.showMessageDialog(diceScreen, "You are out of coins. GAME OVER!", null, JOptionPane.ERROR_MESSAGE);
+            diceScreen.dispose();
+        }
+        Start.setVisible(false);
+        Bet.setVisible(true);
+        Roll.setVisible(true);
+        Exit.setVisible(true);
+        dice1.setIcon(diceFaces[0]);
+        dice2.setIcon(diceFaces[0]);
+        dealerRoll = rollDice(dealer1, dealer2);
+        display.setText("The dealer rolled " + dealerRoll + ". Please make a bet.");
     }
 
 }
