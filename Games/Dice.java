@@ -1,6 +1,5 @@
 package Games;
 
-import Shared.Player; // need to add game logic to support new player
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
