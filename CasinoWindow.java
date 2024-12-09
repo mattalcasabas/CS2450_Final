@@ -222,7 +222,7 @@ public class CasinoWindow {
         playRouletteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("HomeScreen: Roulette button pressed");
-                new Roulette();
+                new Roulette(player);
             }
         });
         games.add(playRouletteButton);
