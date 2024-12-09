@@ -245,7 +245,7 @@ public class CasinoWindow {
         playSlotsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("HomeScreen: Slots button pressed");
-                new Slots();
+                new Slots(player);
             }
         });
         games.add(playSlotsButton);
