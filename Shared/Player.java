@@ -7,9 +7,7 @@ public class Player implements Serializable {
     private int wins;
     private int losses;
 
-    // TODO: implement loading this data from a JSON file so the player can resume their session
-
-    Player(int playerID, int chips) {
+    public Player(int playerID, int chips) {
         this.playerID = playerID;
         this.chips = chips;
     }

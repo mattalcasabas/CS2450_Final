@@ -14,6 +14,6 @@ public class Casino {
 
     Casino(int pid) {
         // initialize a new Player
-        p = new Player(pid, 0);
+        // p = new Player(pid, 0);
     }
 }
