@@ -3,21 +3,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 import javax.swing.*;
+import Shared.Player;
 
-public class Roulette 
-{
-    private int chips = 100;
-    private int winnings = 0;
+public class Roulette {
+    private Player player;
     private int betAmount = 0;
-
     private String selectedBet = "Straight Bet (35:1)";
     private int selectedNumber = -1;
     private String selectedColor = "";
-
     private boolean isBetPlaced = false;
 
-    public Roulette() 
-    {
+    public Roulette() {
+
+        String filePath = "playerData.dat";
+        player = Player.loadFromFile(filePath);
+        if (player == null) {
+            player = new Player(1, 100);
+        }
+
         JFrame jfrm = new JFrame("Roulette Game");
         jfrm.setSize(900, 600);
         jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -28,18 +31,18 @@ public class Roulette
         bettingPanel.setLayout(new BoxLayout(bettingPanel, BoxLayout.Y_AXIS));
         bettingPanel.setPreferredSize(new Dimension(350, 600));
 
-        JLabel chipsLabel = new JLabel("Chips: $100");
+        JLabel chipsLabel = new JLabel("Chips: $" + player.getChips());
         chipsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel betTypeLabel = new JLabel("Select Bet Type:");
         JComboBox<String> betTypeComboBox = new JComboBox<>(new String[]{
-                "Straight Bet (35:1)", "Split Bet (17:1)", "Street Bet (11:1)", "Corner Bet (8:1)",
-                "Color Bet (2:1)", "Dozen Bet (2:1)", "Column Bet (2:1)", "High or Low Bet (2:1)",
-                "Odd or Even Bet (2:1)"
+            "Straight Bet (35:1)", "Split Bet (17:1)", "Street Bet (11:1)", "Corner Bet (8:1)",
+            "Color Bet (2:1)", "Dozen Bet (2:1)", "Column Bet (2:1)", "High or Low Bet (2:1)",
+            "Odd or Even Bet (2:1)"
         });
 
         JLabel betAmountLabel = new JLabel("Enter Bet Amount:");
-        JSpinner betAmountSpinner = new JSpinner(new SpinnerNumberModel(1, 1, chips, 1));
+        JSpinner betAmountSpinner = new JSpinner(new SpinnerNumberModel(1, 1, player.getChips(), 1));
         betAmountSpinner.setMaximumSize(new Dimension(200, 30));
 
         JButton placeBetButton = new JButton("Place Bet");
@@ -49,29 +52,34 @@ public class Roulette
         spinButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         spinButton.setEnabled(false);
 
+        JButton saveButton = new JButton("Save Progress");
+        saveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton loadButton = new JButton("Load Progress");
+        loadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         JProgressBar progressBar = new JProgressBar(0, 100);
         progressBar.setStringPainted(true);
         progressBar.setPreferredSize(new Dimension(200, 30));
 
         bettingPanel.add(Box.createVerticalStrut(20));
         bettingPanel.add(chipsLabel);
-
         bettingPanel.add(Box.createVerticalStrut(20));
         bettingPanel.add(betTypeLabel);
         bettingPanel.add(betTypeComboBox);
-
         bettingPanel.add(Box.createVerticalStrut(20));
         bettingPanel.add(betAmountLabel);
         bettingPanel.add(betAmountSpinner);
-
         bettingPanel.add(Box.createVerticalStrut(20));
         bettingPanel.add(placeBetButton);
-
         bettingPanel.add(Box.createVerticalStrut(10));
         bettingPanel.add(spinButton);
-
         bettingPanel.add(Box.createVerticalStrut(20));
         bettingPanel.add(progressBar);
+        bettingPanel.add(Box.createVerticalStrut(10));
+        bettingPanel.add(saveButton);
+        bettingPanel.add(Box.createVerticalStrut(10));
+        bettingPanel.add(loadButton);
 
         // Center Panel: Roulette Table
         JPanel tablePanel = new JPanel(new GridLayout(4, 10, 5, 5));
@@ -79,8 +87,7 @@ public class Roulette
 
         int[] redNumbers = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36};
 
-        for (int i = 0; i <= 36; i++) 
-        {
+        for (int i = 0; i <= 36; i++) {
             JButton numberButton = createNumberButton(i, redNumbers);
             tablePanel.add(numberButton);
         }
@@ -107,15 +114,12 @@ public class Roulette
 
         placeBetButton.addActionListener(e -> handlePlaceBet(betAmountSpinner, chipsLabel, betTypeComboBox, placeBetButton, spinButton));
 
-        spinButton.addActionListener(new ActionListener() 
-        {
+        spinButton.addActionListener(new ActionListener() {
             private final Random random = new Random();
 
             @Override
-            public void actionPerformed(ActionEvent e) 
-            {
-                if (!isBetPlaced) 
-                {
+            public void actionPerformed(ActionEvent e) {
+                if (!isBetPlaced) {
                     JOptionPane.showMessageDialog(null, "Place a bet!", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -125,12 +129,9 @@ public class Roulette
                 Thread spinThread = new Thread(() -> {
                     for (int i = 0; i <= 100; i++) {
                         progressBar.setValue(i);
-                        try 
-                        {
+                        try {
                             Thread.sleep(50);
-                        } 
-                        catch (InterruptedException ex) 
-                        {
+                        } catch (InterruptedException ex) {
                             ex.printStackTrace();
                         }
                     }
@@ -145,6 +146,21 @@ public class Roulette
                     isBetPlaced = false;
                 });
                 spinThread.start();
+            }
+        });
+
+        saveButton.addActionListener(e -> {
+            player.saveToFile(filePath);
+            JOptionPane.showMessageDialog(null, "Progress saved!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        loadButton.addActionListener(e -> {
+            Player loadedPlayer = Player.loadFromFile(filePath);
+            if (loadedPlayer != null) {
+                player = loadedPlayer;
+                chipsLabel.setText("Chips: $" + player.getChips());
+                betAmountSpinner.setModel(new SpinnerNumberModel(1, 1, player.getChips(), 1));
+                JOptionPane.showMessageDialog(null, "Progress loaded!", "Success", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
@@ -179,6 +195,7 @@ public class Roulette
 
     private void handlePlaceBet(JSpinner betAmountSpinner, JLabel chipsLabel, JComboBox<String> betTypeComboBox, JButton placeBetButton, JButton spinButton) {
         betAmount = (int) betAmountSpinner.getValue();
+        int chips =  player.getChips();
         if (betAmount <= 0 || betAmount > chips) 
         {
             JOptionPane.showMessageDialog(null, "Invalid bet amount.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -197,7 +214,8 @@ public class Roulette
     }
 
     private void calculateWinnings(int winningNumber, String winningColor, JLabel resultLabel, JLabel outcomeLabel, JLabel chipsLabel) {
-        winnings = 0;
+        int winnings = 0;
+        int chips =  player.getChips();
     
         if (selectedBet.equals("Straight Bet (35:1)") && selectedNumber == winningNumber) 
         {
@@ -298,8 +316,7 @@ public class Roulette
         return false;
     }
 
-    public static void main(String[] args) 
-    {
+    public static void main(String[] args) {
         new Roulette();
     }
 }
