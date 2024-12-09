@@ -97,21 +97,53 @@ public class CasinoWindow implements ActionListener {
         fileMenu.addSeparator();
         exitMenuItem = new JMenuItem("Exit");
         fileMenu.add(exitMenuItem);
-        exitMenuItem.addActionListener(this);
+        exitMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // prompt player to save data
+                savePlayerToFile();
+                // exit the program
+                System.exit(0);
+            }
+        });
         // add menu items for View menu
         returnHomeMenuItem = new JMenuItem("Return to home screen...");
         viewMenu.add(returnHomeMenuItem);
-        returnHomeMenuItem.addActionListener(this);
+        returnHomeMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                switchScreens("Home");
+            }
+        });
         // add debug items for Debug menu
         setChipsMenuItem = new JMenuItem("Set player chips...");
         debugMenu.add(setChipsMenuItem);
-        setChipsMenuItem.addActionListener(this);
-        setWinsMenuItem = new JMenuItem("Set player wins...");
+        setChipsMenuItem.addActionListener(new ActionListener() {
+            // debug: add 100 player chips
+            public void actionPerformed(ActionEvent e) {
+                String playerChipsString = JOptionPane.showInputDialog(homeScreen, "Set player chips:");
+                try {
+                    player.setChips(Integer.parseInt(playerChipsString.trim()));
+                } catch (NumberFormatException nfe) {
+                    JOptionPane.showMessageDialog(homeScreen, "Invalid player chips!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                updateStats.run();
+            }
+        });
+        setWinsMenuItem = new JMenuItem("Add player win...");
         debugMenu.add(setWinsMenuItem);
-        setWinsMenuItem.addActionListener(this);
-        setLossesMenuItem = new JMenuItem("Set player losses...");
+        setWinsMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                player.addWin();
+                updateStats.run();
+            }
+        });
+        setLossesMenuItem = new JMenuItem("Add player loss...");
         debugMenu.add(setLossesMenuItem);
-        setLossesMenuItem.addActionListener(this);
+        setLossesMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                player.addLoss();
+                updateStats.run();
+            }
+        });
         // add menus to menu bar
         mb.add(fileMenu);
         mb.add(viewMenu);
@@ -169,6 +201,7 @@ public class CasinoWindow implements ActionListener {
         playBlackjackButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("HomeScreen: Blackjack button pressed");
+                new BlackJack();
             }
         });
         games.add(playBlackjackButton);
@@ -179,6 +212,7 @@ public class CasinoWindow implements ActionListener {
         playRouletteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("HomeScreen: Roulette button pressed");
+                new Roulette();
             }
         });
         games.add(playRouletteButton);
@@ -201,6 +235,7 @@ public class CasinoWindow implements ActionListener {
         playSlotsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("HomeScreen: Slots button pressed");
+                new Slots();
             }
         });
         games.add(playSlotsButton);
