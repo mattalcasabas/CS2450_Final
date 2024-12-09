@@ -13,7 +13,7 @@ public class Roulette {
     private String selectedColor = "";
     private boolean isBetPlaced = false;
 
-    public Roulette() {
+    public Roulette(Player player) {
 
         String filePath = "playerData.dat";
         player = Player.loadFromFile(filePath);
@@ -318,9 +318,10 @@ public class Roulette {
 
     public static void main(String[] args) {
         Player player = Player.loadFromFile("playerData.dat"); // Update: Load player data
-        if (player == null) {
+        if (player == null) 
+        {
             player = new Player(1, 5); // Create new player with default balance
         }
-        new Slots(player);
+        new Roulette(player);
     }
 }
