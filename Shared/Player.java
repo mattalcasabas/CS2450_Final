@@ -1,5 +1,7 @@
 package Shared;
-public class Player {
+import java.io.*;
+public class Player implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int playerID;
     private int chips;
     private int wins;
@@ -38,5 +40,26 @@ public class Player {
 
     public void addLoss() {
         this.losses++;
+    }
+
+    // saving the player data to file
+    public void saveToFile(String filePath) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
+            oos.writeObject(this);
+            System.out.println("Saved player data as " + filePath);
+        } catch (Exception e) {
+            System.out.println("Error saving data: " + e.getMessage());
+        }
+    }
+
+    // load the player data from file
+    public static Player loadFromFile(String filePath) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
+            // create a new player from the file
+            return (Player) ois.readObject();
+        } catch (Exception e) {
+            System.out.println("Error reading data: " + e.getMessage());
+            return null;
+        }
     }
 }

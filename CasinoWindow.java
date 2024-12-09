@@ -18,13 +18,19 @@ public class CasinoWindow implements ActionListener {
 
     JFrame homeScreen; 
     JMenuBar mb;
-    JTabbedPane tp;
-    GroupLayout gl;
-    JMenu fileMenu, debugMenu;
+    JPanel homePanel;
+    JMenu fileMenu, viewMenu, debugMenu;
     // JMenuItems for File menu
     JMenuItem newPlayerMenuItem, openPlayerMenuItem, exitMenuItem;
     // JMenuItems for Debug menu
     JMenuItem setChipsMenuItem, setWinsMenuItem, setLossesMenuItem;
+    // JMenuItems for View menu
+    JMenuItem returnHomeMenuItem;
+    // icons for home screen
+    ImageIcon blackjackIcon = new ImageIcon("assets/HomeScreenIcons/blackjack-scaled.png"),
+              diceIcon = new ImageIcon("assets/HomeScreenIcons/dice-scaled.png"),
+              rouletteIcon = new ImageIcon("assets/HomeScreenIcons/roulette-scaled.png"),
+              slotsIcon = new ImageIcon("assets/HomeScreenIcons/slots-scaled.png");
 
     CasinoWindow() {
         homeScreen = new JFrame("Home");
@@ -32,10 +38,11 @@ public class CasinoWindow implements ActionListener {
         homeScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         homeScreen.setVisible(true);
         // we'll find a better layout for this
-        homeScreen.setLayout(new FlowLayout());
+        homeScreen.setLayout(new CardLayout());
 
         makeMenuBar();
-        makeHomeScreen();
+        homePanel = makeHomePanel();
+        homeScreen.add(homePanel);
         // need to open just welcome screen first and then makeHomeScreen() is called when the player is selected so 2 windows don't open
         // makeWelcomeScreen();
 
@@ -45,6 +52,7 @@ public class CasinoWindow implements ActionListener {
         // create the menu bar and add to top of the window
         mb = new JMenuBar();
         fileMenu = new JMenu("File");
+        viewMenu = new JMenu("View");
         debugMenu = new JMenu("Debug");
         homeScreen.setJMenuBar(mb);
         // add menu items for File menu
@@ -58,6 +66,10 @@ public class CasinoWindow implements ActionListener {
         exitMenuItem = new JMenuItem("Exit");
         fileMenu.add(exitMenuItem);
         exitMenuItem.addActionListener(this);
+        // add menu items for View menu
+        returnHomeMenuItem = new JMenuItem("Return to home screen...");
+        viewMenu.add(returnHomeMenuItem);
+        returnHomeMenuItem.addActionListener(this);
         // add debug items for Debug menu
         setChipsMenuItem = new JMenuItem("Set player chips...");
         debugMenu.add(setChipsMenuItem);
@@ -70,28 +82,65 @@ public class CasinoWindow implements ActionListener {
         setLossesMenuItem.addActionListener(this);
         // add menus to menu bar
         mb.add(fileMenu);
+        mb.add(viewMenu);
         mb.add(debugMenu);
         homeScreen.setJMenuBar(mb);
     }
 
-    public void makeHomeScreen() {
-        JButton playBlackjackButton = new JButton("Play Blackjack...");
+    public JPanel makeHomePanel() {
+        JPanel home = new JPanel();
+        // setting border layout for top/center alignment
+        home.setLayout(new BorderLayout()); 
+        
+        // panel for player stats
+        JPanel stats = new JPanel();
+        // align text to the left
+        stats.setLayout(new FlowLayout(FlowLayout.LEFT));
+        // add padding
+        stats.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // labels for stats
+        JLabel playerNameLabel = new JLabel("Player: John Doe");
+        JLabel chipsLabel = new JLabel("Chips: 1000");
+        JLabel winsLabel = new JLabel("Wins: 5");
+        JLabel lossesLabel = new JLabel("Losses: 2");
+        // add stats to the stats panel
+        stats.add(playerNameLabel);
+        // add space between stats
+        stats.add(Box.createHorizontalStrut(20));
+        stats.add(chipsLabel);
+        stats.add(Box.createHorizontalStrut(20));
+        stats.add(winsLabel);
+        stats.add(Box.createHorizontalStrut(20));
+        stats.add(lossesLabel);
+        // add stats panel to home panel
+        home.add(stats, BorderLayout.NORTH);
+
+        // panel for game selection
+        JPanel games = new JPanel();
+        games.setLayout(new GridLayout(2, 2, 10, 10));
+        JButton playBlackjackButton = new JButton("Blackjack", blackjackIcon);
+        playBlackjackButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+        playBlackjackButton.setHorizontalTextPosition(SwingConstants.CENTER);
         playBlackjackButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("HomeScreen: Blackjack button pressed");
             }
         });
-        homeScreen.add(playBlackjackButton);
+        games.add(playBlackjackButton);
 
-        JButton playRouletteButton = new JButton("Play Roulette...");
+        JButton playRouletteButton = new JButton("Roulette", rouletteIcon);
+        playRouletteButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+        playRouletteButton.setHorizontalTextPosition(SwingConstants.CENTER);
         playRouletteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("HomeScreen: Roulette button pressed");
             }
         });
-        homeScreen.add(playRouletteButton);
+        games.add(playRouletteButton);
 
-        JButton playDiceButton = new JButton("Play Dice...");
+        JButton playDiceButton = new JButton("Dice", diceIcon);
+        playDiceButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+        playDiceButton.setHorizontalTextPosition(SwingConstants.CENTER);
         playDiceButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("HomeScreen: Dice button pressed");
@@ -99,15 +148,21 @@ public class CasinoWindow implements ActionListener {
                 new Dice();
             }
         });
-        homeScreen.add(playDiceButton);
+        games.add(playDiceButton);
 
-        JButton playSlotsButton = new JButton("Play Slots...");
+        JButton playSlotsButton = new JButton("Slots", slotsIcon);
+        playSlotsButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+        playSlotsButton.setHorizontalTextPosition(SwingConstants.CENTER);
         playSlotsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("HomeScreen: Slots button pressed");
             }
         });
-        homeScreen.add(playSlotsButton);
+        games.add(playSlotsButton);
+        // add games panel to home panel
+        home.add(games, BorderLayout.CENTER);
+
+        return home;
     }
 
     public void makeWelcomeScreen() {
