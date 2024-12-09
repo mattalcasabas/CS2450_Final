@@ -27,7 +27,7 @@ public class CasinoWindow implements ActionListener {
     JMenu fileMenu, viewMenu, debugMenu;
     Runnable updateStats;
     // JMenuItems for File menu
-    JMenuItem savePlayerMenuItem, openPlayerMenuItem, exitMenuItem;
+    JMenuItem refreshStatsMenuItem, savePlayerMenuItem, openPlayerMenuItem, exitMenuItem;
     // JMenuItems for Debug menu
     JMenuItem setChipsMenuItem, setWinsMenuItem, setLossesMenuItem;
     // JMenuItems for View menu
@@ -78,6 +78,14 @@ public class CasinoWindow implements ActionListener {
         debugMenu = new JMenu("Debug");
         homeScreen.setJMenuBar(mb);
         // add menu items for File menu
+        refreshStatsMenuItem = new JMenuItem("Refresh stats...");
+        fileMenu.add(refreshStatsMenuItem);
+        refreshStatsMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // update the player stat display
+                updateStats.run();
+            }
+        });
         savePlayerMenuItem = new JMenuItem("Save player...");
         fileMenu.add(savePlayerMenuItem);
         savePlayerMenuItem.addActionListener(new ActionListener() {
@@ -189,6 +197,8 @@ public class CasinoWindow implements ActionListener {
         stats.add(winsLabel);
         stats.add(Box.createHorizontalStrut(20));
         stats.add(lossesLabel);
+        stats.add(Box.createHorizontalStrut(20));
+
         // add stats panel to home panel
         home.add(stats, BorderLayout.NORTH);
 
