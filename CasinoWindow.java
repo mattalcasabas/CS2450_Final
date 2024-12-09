@@ -7,7 +7,7 @@ import java.io.File;
 import Shared.Player;
 import Games.*;
 
-public class CasinoWindow implements ActionListener {
+public class CasinoWindow {
     /*
      * this creates and manages the Casino GUI
      * all GUI management should be done here ideally, including:
@@ -286,7 +286,6 @@ public class CasinoWindow implements ActionListener {
             }
         });
         welcomeScreen.add(openPlayerButton);
-        // TODO: when new player added or existing player opened, destroy the welcome screen window
         return welcomeScreen;
     }
 
@@ -364,11 +363,5 @@ public class CasinoWindow implements ActionListener {
             }
         }
         updateStats.run();
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'actionPerformed'");
     }
 }
