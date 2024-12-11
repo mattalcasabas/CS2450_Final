@@ -2,8 +2,6 @@ package Games;
 
 import Shared.Player; // need to add game logic to support new player
 import javax.swing.*;
-import javax.swing.border.Border;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
@@ -11,20 +9,31 @@ import java.util.Random;
 public class Dice implements ActionListener{
     JFrame diceScreen;
     JButton Bet, Roll, Exit, Start, Replay;
-    int bettedCoins, currCoins, dealerRoll, userRoll;
+    int bettedCoins, dealerRoll, userRoll;
     private ImageIcon[] diceFaces;
     JLabel coinsCount, dice1, dice2, display, dealer1, dealer2;
     Random rand = new Random();
-    
-    public Dice(){
+    private Player player;
+    private String saveFilePath = "playerData.dat";
+
+    public Dice(Player player){
+        this.player = player;
         diceScreen = new JFrame("Dice Game");
         diceScreen.setSize(500,500);
         diceScreen.setVisible(true);
-        diceScreen.setLayout(new BorderLayout());
+       
+        ImageIcon backgroundImage = new ImageIcon(getClass().getResource("/assets/WoodBackground.jpg"));
+        JPanel backgroundPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // Draw the background image
+                g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        backgroundPanel.setLayout(new BorderLayout());
 
-        // hardcoded set number of coins
-        currCoins = 5;
-        coinsCount = new JLabel("Coins " + currCoins, SwingConstants.RIGHT);
+        coinsCount = new JLabel("Coins $" + player.getChips(), SwingConstants.RIGHT);
 
         // load all dice images in an array to be randomized during gameplay
         diceFaces = new ImageIcon[6];
@@ -85,9 +94,11 @@ public class Dice implements ActionListener{
         bottomPanel.add(Roll);
         bottomPanel.add(Exit);
 
-        diceScreen.add(topPanel, BorderLayout.NORTH);
-        diceScreen.add(centerPanel, BorderLayout.CENTER);
-        diceScreen.add(bottomPanel, BorderLayout.SOUTH);
+        backgroundPanel.add(topPanel, BorderLayout.NORTH);
+        backgroundPanel.add(centerPanel, BorderLayout.CENTER);
+        backgroundPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        diceScreen.setContentPane(backgroundPanel);
     }
 
     //actions for the buttons to work when pressed
@@ -130,17 +141,18 @@ public class Dice implements ActionListener{
         }
         else if(userRoll > dealerRoll){
             display.setText("You rolled " + userRoll + " and won! You gained " + bettedCoins + " coin(s)!");
-            currCoins += bettedCoins;
-            coinsCount.setText("Coins " + currCoins);
+            player.setChips(player.getChips() + bettedCoins);
+            coinsCount.setText("Coins " + player.getChips());
         }
         else{
             display.setText("You rolled " + userRoll + " and lost. You lose " + bettedCoins + " coin(s) :(");
-            currCoins -= bettedCoins;
-            coinsCount.setText("Coins " + currCoins);
+            player.setChips(player.getChips() - bettedCoins);
+            coinsCount.setText("Coins " + player.getChips());
         }
         bettedCoins = 0;
         Start.setText("Play Again?");
         Start.setVisible(true);
+        player.saveToFile(saveFilePath); 
     }
 
     // method to show betting dialog box
@@ -158,7 +170,7 @@ public class Dice implements ActionListener{
         JLabel request = new JLabel("How many coins?");
         betPanel.add(request);
 
-        SpinnerNumberModel spinModel = new SpinnerNumberModel(1, 1, currCoins, 1);
+        SpinnerNumberModel spinModel = new SpinnerNumberModel(1, 1, player.getChips(), 1);
         JSpinner jspn = new JSpinner(spinModel);
         betPanel.add(jspn);
 
@@ -178,7 +190,7 @@ public class Dice implements ActionListener{
     }
 
     private void play(){
-        if(currCoins <= 0){
+        if(player.getChips() <= 0){
             JOptionPane.showMessageDialog(diceScreen, "You are out of coins. GAME OVER!", null, JOptionPane.ERROR_MESSAGE);
             diceScreen.dispose();
         }

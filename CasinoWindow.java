@@ -233,8 +233,7 @@ public class CasinoWindow {
         playDiceButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("HomeScreen: Dice button pressed");
-                // need to make it so the game opens in the same window instead of a new jframe (maybe use cardlayout?)
-                new Dice();
+                new Dice(player);
             }
         });
         games.add(playDiceButton);
